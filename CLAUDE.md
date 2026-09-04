@@ -5,9 +5,15 @@ Guidance for Claude Code when working in this repository.
 ## What this repo is
 
 This repo packages a single Claude Code skill: **`spintax`**. The skill adds
-deliverability spintax (`{option1|option2|option3}`) to cold email copy without
-changing meaning or tone. It is spintax-only — it does not pick between
-variations, rewrite copy, or critique it.
+deliverability spintax to cold email copy without changing meaning or tone. It is
+spintax-only — it does not pick between variations, rewrite copy, or critique it.
+
+The skill supports two output formats and **defaults to PlusVibe**:
+
+- **PlusVibe (default):** `{{random|option1|option2|option3}}` — double braces,
+  leading `random`. Fallback for empty merge vars: `{{fallback|{{var}}|default}}`.
+- **Classic (on request):** `{option1|option2|option3}` — single braces, for
+  Smartlead / Instantly.
 
 The authoritative definition of the skill's behavior is
 [`skills/spintax/SKILL.md`](skills/spintax/SKILL.md). If you change how the skill
@@ -18,7 +24,8 @@ behaves, edit that file — it is the source of truth, not this file.
 ```
 spintax-skill/
 ├── CLAUDE.md                 # this file — guidance for Claude Code
-├── README.txt                # human-facing install + usage docs
+├── README.md                 # human-facing docs (GitHub homepage)
+├── README.txt                # plain-text mirror of the docs
 └── skills/
     └── spintax/
         └── SKILL.md          # the skill definition (frontmatter + instructions)
@@ -41,9 +48,15 @@ It then appears as `/spintax` in every project. A project-scoped install goes to
 - **Golden rule:** every combination the sender could randomly assemble must read
   as a natural, grammatical, complete sentence. Make each block a self-contained
   phrase.
-- **No nested spintax.** Never `{... {a|b} ...}`. Split into two adjacent blocks
-  and verify every cross-pairing.
-- **Never spin:** any `{{...}}` merge token (Smartlead, Instantly, any tool),
+- **No nested spin.** Never a spin inside a spin. In PlusVibe that means no
+  `random` inside `random`; the only thing allowed inside a `random` option is a
+  single merge variable or a `fallback`. Split into two adjacent blocks and verify
+  every cross-pairing.
+- **PlusVibe specifics:** only ONE variable per `random` option; spaces inside
+  options are literal (keep pipes tight, no stray spaces); write `random` /
+  `fallback` lowercase; remind the user to run Preview Email + Test Email before
+  launch (PlusVibe fails a malformed spin silently).
+- **Never spin:** any merge token (`{{first_name}}`, `{{Company}}`, any tool),
   `%signature%`, names, sign-offs, `-` separators, numbers, stats, or proof points.
 - **3 options per block** by default.
 - **Auto-fix grammar** inside spin options so no random pick ships an error.
